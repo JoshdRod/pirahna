@@ -6,7 +6,7 @@
 using namespace cv;
 int main()
 {
-    Mat frame; // ??
+    Mat frame;
     VideoCapture cap;
 
     int deviceID = 2; // Select the ID of the USB camera we want - 0 = default
