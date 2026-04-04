@@ -1,0 +1,12 @@
+# Generated files
+*.out
+
+# Temporary files
+*.swp
+*.swo
+*.tmp
+
+# Image files
+*.png
+*.jpg
+*.jpeg
