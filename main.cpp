@@ -57,6 +57,11 @@ int main()
 				Vec3b down = frame.at<Vec3b((Point(x,y+1));
 
 				// 2. Calculate value of new pixel
+				int blue = std::mean(left[0], right[0], up[0], down[0]); // What's the mean func called??
+				int red = std::mean(left[1], right[1], up[1], down[1]);
+				int green = std::mean(left[2], right[2], up[2], down[2]);
+				Vec3b newPixel = [blue, red, green];
+
 				// Add new pixel to arrray
 		  }
 	    }
