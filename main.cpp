@@ -114,3 +114,30 @@ Map<Vec3b> generatePixelMap(Map frame, Point centrePixel)
 	}
 	return pixelMap;
 }
+
+// Calculates the weighted average of a pixel Map
+// By default, each pixel has a weighting of 1. To modify that weighting, enter a record into the weighting map (e.g: {"right": 2} will weight the right pixel by 2x)
+// INPUTS: Map<Vec3b> pixels, Map<float> weightings
+// RETURNS: Vec3b average pixel
+Vec3b generateWeightedAverage(Map<Vec3b> pixelMap, Map<float> weights)
+{
+	Vec3b sigmaPixel;
+	float sigmaWeight = 0;
+	for each ((String name, Vec3b data) in pixelMap) // TODO: What's the syntax for a foreach loop?
+	{
+		// If pixel is null, skip it
+		if (data == null)
+			continue;
+
+		float weight = weights.contains(name) ? weights[name] : 1; // How do I check if a key is in a Map?
+		for (int i = 0; i < 3; i++)
+			sigmaPixel[i] += data[i] * weight;
+		sigmaWeight += weight;
+	}
+	// Return avg : sigma pixel / sigma weight
+	Vec3b averagePixel;
+	for (int i = 0; i < 3; i++)
+		averagePixel[i] = sigmaPixel[i] / sigmaWeight;
+
+	return averagePixel;
+}
