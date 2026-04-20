@@ -108,7 +108,7 @@ map<string, Vec3b> generatePixelMap(Mat frame, Point centrePixel)
 		int offset[2] = direction.second;
 		try
 		{
-			pixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1]))); // TODO: Can we access the x y vals like this?
+			pixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1])));
 		}
 		catch
 		{
@@ -126,7 +126,6 @@ Vec3b generateWeightedAverage(map<string, Vec3b> pixelMap, map<string, float> we
 {
 	Vec3b sigmaPixel;
 	float sigmaWeight = 0;
-	//for each ((String name, Vec3b data) in pixelMap)
 	for (auto pixel : pixelMap)
 	{
 		string name = pixel.first;
