@@ -46,42 +46,23 @@ int main()
 	    {
 		    for (int x; x < frame.cols; x++)
          	    {
-			    // Add to new array
-			    upscaledImage.at<Vec3b>(Point(x*2,y*2)) = frame.at<Vec3b>(Point(x,y));
+				// Add to new array
+				upscaledImage.at<Vec3b>(Point(x*2,y*2)) = frame.at<Vec3b>(Point(x,y));
 
-			    // Generate new pixels from pixels around it
-  			    	// 1. Find pixels around new pixel -> nested array (tuple?)
-				// above / below
-				Vec3b left = frame.at<Vec3b((Point(x,y));
-				Vec3b right = frame.at<Vec3b((Point(x+1,y));
-				Vec3b up = frame.at<Vec3b((Point(x,y-1));
-				Vec3b down = frame.at<Vec3b((Point(x,y+1));
+				// Generate new pixels from pixels around it
+				// 1. Find pixels around new pixel -> nested array (tuple?)
+				Vec3b centrePixel = frame.at<Vec3b>(Point(x, y));
+				map<string, Vec3b> surroundingPixels = generateSurroundingPixelMap(frame, centrePixel);
 
 				// 2. Calculate value of new pixels
 				// RIGHT
-				Vec3b rightPixel;
-				for (int i = 0; i < 3; i++)
-				{
-					// Weight left + right pixels
-					rightPixel[i] = std::mean(left[i], left[i], right[i], right[i],  up[i], down[i]); // What's the mean func called??
-				}
-
+				Vec3b rightPixel = generateWeightedAverage(surroundingPixels, {{"left", 2}, {"right", 2}});
 				// BOTTOM
-				Vec3b bottomPixel;
-				for (int i = 0; i < 3; i++)
-				{
-					// Weight left + bottom pixels
-					bottomPixel[i] = std::mean(left[i], left[i], right[i],  up[i], down[i], down[i]);
-				}
-
+				Vec3b bottomPixel = generateWeightedAverage(surroundingPixels, {{"left", 2}, {"bottom", 2}});
 				// BOTTOM RIGHT
-				Vec3b bottomRightPixel;
-				for (int i = 0; i < 3; i++)
-				{
-					// No weighting
-					bottomRightPixel[i] = std::mean(left[i], right[i],  up[i], down[i]);
-				}
-				// Add new pixel to arrray
+				Vec3b bottomRightPixel = generateWeightedAverage(surroundingPixels, {{}});
+
+				// TODO: Add new pixel to arrray
 		  }
 	    }
 
