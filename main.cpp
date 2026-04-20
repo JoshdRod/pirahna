@@ -101,8 +101,11 @@ map<string, Vec3b> generatePixelMap(Mat frame, Point centrePixel)
 	map<string, Vec3b> pixelMap;
 	pixelMap.insert("centre", frame.at<Vec3b>(centrePixel));
 
-	for ((String name, int offset[2]) in [("left", [-1, 0]), ("right", [1, 0]), ("up", [0, -1]), ("down", [0, 1])])
-	{ // TODO: What's the c++ way to write this?
+	map<string, int[2]> directions = {{"left", [-1, 0]}, {"right", [1, 0]}, {"up", [0, -1]}, {"down", [0, 1]}};
+	for (auto direction : directions)
+	{
+		string name = direction.first;
+		int offset[2] = direction.second;
 		try
 		{
 			pixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1]))); // TODO: Can we access the x y vals like this?
