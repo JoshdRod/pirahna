@@ -63,6 +63,9 @@ int main()
 				Vec3b bottomRightPixel = generateWeightedAverage(surroundingPixels, {{}});
 
 				// TODO: Add new pixel to arrray
+				upscaledImage.at<Vec3b>(Point(x*2 + 1, y*2)) = rightPixel;
+				upscaledImage.at<Vec3b>(Point(x*2, y*2 + 1)) = bottomPixel;
+				upscaledImage.at<Vec3b>(Point(x*2 + 1, y*2 + 1)) = bottomRightPixel;
 		  }
 	    }
 
