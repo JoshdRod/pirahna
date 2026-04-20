@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <map>
 
 using namespace cv;
 int main()
@@ -91,45 +92,47 @@ int main()
     return 0;
 }
 
-// Generates a map (dict) of pixels surrounding the centre.
+// Generates a map of pixels surrounding the centre.
 // If pixel does not exist (e.g a surrounding pixel on the corner), Map stores null in that place
 // INPUTS: Frame to take pixels from, Point location of centre pixel
-// RETURNS: Map<Pixel> of surrounding pixels ({"left": Vec3b, ..})
-Map<Vec3b> generatePixelMap(Map frame, Point centrePixel)
+// RETURNS: map<string, Pixel> of surrounding pixels ({"left": Vec3b, ..})
+map<string, Vec3b> generatePixelMap(Mat frame, Point centrePixel)
 {
-	// TODO: What is the c++ version of a dict?
-	Map<Vec3b> pixelMap;
-	pixelMap["centre"] = frame.at<Vec3b>(centrePixel);
+	map<string, Vec3b> pixelMap;
+	pixelMap.insert("centre", frame.at<Vec3b>(centrePixel));
 
 	for ((String name, int offset[2]) in [("left", [-1, 0]), ("right", [1, 0]), ("up", [0, -1]), ("down", [0, 1])])
 	{ // TODO: What's the c++ way to write this?
 		try
 		{
-			pixelMap[name] = frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1])); // TODO: Can we access the x y vals like this?
+			pixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1]))); // TODO: Can we access the x y vals like this?
 		}
 		catch
 		{
-			pixelMap[name] = null;
+			pixelMap.insert(name, null);
 		}
 	}
 	return pixelMap;
 }
 
-// Calculates the weighted average of a pixel Map
+// Calculates the weighted average of a pixel map
 // By default, each pixel has a weighting of 1. To modify that weighting, enter a record into the weighting map (e.g: {"right": 2} will weight the right pixel by 2x)
-// INPUTS: Map<Vec3b> pixels, Map<float> weightings
+// INPUTS: map<Vec3b> pixels, map<float> weightings
 // RETURNS: Vec3b average pixel
-Vec3b generateWeightedAverage(Map<Vec3b> pixelMap, Map<float> weights)
+Vec3b generateWeightedAverage(map<string, Vec3b> pixelMap, map<string, float> weights)
 {
 	Vec3b sigmaPixel;
 	float sigmaWeight = 0;
-	for each ((String name, Vec3b data) in pixelMap) // TODO: What's the syntax for a foreach loop?
+	//for each ((String name, Vec3b data) in pixelMap)
+	for (auto pixel : pixelMap)
 	{
+		string name = pixel.first;
+		Vec3b data = pixel.second;
 		// If pixel is null, skip it
 		if (data == null)
 			continue;
 
-		float weight = weights.contains(name) ? weights[name] : 1; // How do I check if a key is in a Map?
+		float weight = weights.contains(name) ? weights.at(name) : 1;
 		for (int i = 0; i < 3; i++)
 			sigmaPixel[i] += data[i] * weight;
 		sigmaWeight += weight;
