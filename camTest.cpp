@@ -13,7 +13,7 @@ int main()
     int apiID = CAP_V4L2; // ??
 
     cap.open(deviceID, apiID); // Opens selected cam using selected API
-    
+
     // Error if fail to open cam
     if (!cap.isOpened()) {
 	    std::cerr << "ERROR! Unable to open camera\n";
