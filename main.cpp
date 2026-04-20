@@ -96,10 +96,10 @@ int main()
 // If pixel does not exist (e.g a surrounding pixel on the corner), Map stores null in that place
 // INPUTS: Frame to take pixels from, Point location of centre pixel
 // RETURNS: map<string, Pixel> of surrounding pixels ({"left": Vec3b, ..})
-map<string, Vec3b> generatePixelMap(Mat frame, Point centrePixel)
+map<string, Vec3b> generateSurroundingPixelMap(Mat frame, Point centrePixel)
 {
-	map<string, Vec3b> pixelMap;
-	pixelMap.insert("centre", frame.at<Vec3b>(centrePixel));
+	map<string, Vec3b> surroundingPixelMap;
+	surroundingPixelMap.insert("centre", frame.at<Vec3b>(centrePixel));
 
 	map<string, int[2]> directions = {{"left", [-1, 0]}, {"right", [1, 0]}, {"up", [0, -1]}, {"down", [0, 1]}};
 	for (auto direction : directions)
@@ -108,14 +108,14 @@ map<string, Vec3b> generatePixelMap(Mat frame, Point centrePixel)
 		int offset[2] = direction.second;
 		try
 		{
-			pixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1])));
+			surroundingPixelMap.insert(name, frame.at<Vec3b>((centrePixel.x + offset[0], centrePixel.y + offset[1])));
 		}
 		catch
 		{
-			pixelMap.insert(name, null);
+			surroundingPixelMap.insert(name, null);
 		}
 	}
-	return pixelMap;
+	return surroundingPixelMap;
 }
 
 // Calculates the weighted average of a pixel map
