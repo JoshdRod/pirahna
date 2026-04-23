@@ -55,18 +55,7 @@ int main()
 				map<string, Vec3b> surroundingPixels = generateSurroundingPixelMap(frame, centrePixel);
 
 				// 2. Calculate value of new pixels
-				// RIGHT
-				Vec3b rightPixel = generateWeightedAverage(surroundingPixels, {{"left", 2}, {"right", 2}});
-				// BOTTOM
-				Vec3b bottomPixel = generateWeightedAverage(surroundingPixels, {{"left", 2}, {"bottom", 2}});
-				// BOTTOM RIGHT
-				Vec3b bottomRightPixel = generateWeightedAverage(surroundingPixels, {{}});
-
-				// TODO: Add new pixel to arrray
-				upscaledImage.at<Vec3b>(Point(x*2 + 1, y*2)) = rightPixel;
-				upscaledImage.at<Vec3b>(Point(x*2, y*2 + 1)) = bottomPixel;
-				upscaledImage.at<Vec3b>(Point(x*2 + 1, y*2 + 1)) = bottomRightPixel;
-		  }
+				generateBottomRightPixels(upscaledImage, surroundingPixels, Point(x, y), 3);
 	    }
 
 	    // Break if key pressed (??)
@@ -102,31 +91,67 @@ map<string, Vec3b> generateSurroundingPixelMap(Mat frame, Point centrePixel)
 	return surroundingPixelMap;
 }
 
-// Calculates the weighted average of a pixel map
-// By default, each pixel has a weighting of 1. To modify that weighting, enter a record into the weighting map (e.g: {"right": 2} will weight the right pixel by 2x)
-// INPUTS: map<Vec3b> pixels, map<float> weightings
-// RETURNS: Vec3b average pixel
-Vec3b generateWeightedAverage(map<string, Vec3b> pixelMap, map<string, float> weights)
+
+// Generates pixels to fill the bottom right of the centre pixel, then places them on the upscaled image frame
+// Generates enough pixels to satify the given scale factor
+// INPUTS: frame of upscaled image, map<string, Vec3b> of surrounding pixels,Point where centre pixel lies on original image, int scale factor
+void generateBottomRightPixels(Mat upscaledFrame, map<string, Vec3b> surroundingPixelMap, Point originalCentrePoint, int scaleFactor) // TODO: Switch to centrePoint on UPSCALED image
 {
-	Vec3b sigmaPixel;
-	float sigmaWeight = 0;
-	for (auto pixel : pixelMap)
+	// Calculate position of where generated pixel will go
+	for (int i = 0; i < scaleFactor; i++)
 	{
-		string name = pixel.first;
-		Vec3b data = pixel.second;
-		// If pixel is null, skip it
-		if (data == null)
-			continue;
+		for (int j = 0; j < scaleFactor; j++)
+		{
+			// Skip 0,0 (that's the centre pixel!)
+			if (i == 0 && j == 0)
+				continue;
+			// Calculate position old pixel will be on new image
+			map<string, int> pixelPositionMap;
+			for (auto pixel : surroundingPixelMap)
+			{
+				// Calculate pixel's position relative to centre pixel on upscaled image
+				Point pixelRelativePosition = Point(0,0);
+				if (pixel.first.contains("top"))
+					pixelRelativePosition.y = scaleFactor;
+				else if (pixel.first.contains("bottom"))
+					pixelRelativePosition.y = -scaleFactor;
 
-		float weight = weights.contains(name) ? weights.at(name) : 1;
-		for (int i = 0; i < 3; i++)
-			sigmaPixel[i] += data[i] * weight;
-		sigmaWeight += weight;
-	}
-	// Return avg : sigma pixel / sigma weight
-	Vec3b averagePixel;
-	for (int i = 0; i < 3; i++)
-		averagePixel[i] = std::round(sigmaPixel[i] / sigmaWeight);
-
-	return averagePixel;
+				if (pixel.first.contains("right"))
+					pixelRelativePosition.x = scaleFactor;
+				else if (pixel.first.contains("left"))
+					pixelRelativePosition.x = -scaleFactor;
+				pixelPositionMap.insert(pixel.first, pixelRelativePosition);
+			}
+			// Calculate distance between (pythag)
+			// Do Ae^k(dist) here = weight
+			// (Figure out A and k via ML later)
 }
+
+//// Calculates the weighted average of a pixel map
+//// By default, each pixel has a weighting of 1. To modify that weighting, enter a record into the weighting map (e.g: {"right": 2} will weight the right pixel by 2x)
+//// INPUTS: map<Vec3b> pixels, map<float> weightings
+//// RETURNS: Vec3b average pixel
+//Vec3b generateWeightedAverage(map<string, Vec3b> pixelMap, map<string, float> weights)
+//{
+//	Vec3b sigmaPixel;
+//	float sigmaWeight = 0;
+//	for (auto pixel : pixelMap)
+//	{
+//		string name = pixel.first;
+//		Vec3b data = pixel.second;
+//		// If pixel is null, skip it
+//		if (data == null)
+//			continue;
+//
+//		float weight = weights.contains(name) ? weights.at(name) : 1;
+//		for (int i = 0; i < 3; i++)
+//			sigmaPixel[i] += data[i] * weight;
+//		sigmaWeight += weight;
+//	}
+//	// Return avg : sigma pixel / sigma weight
+//	Vec3b averagePixel;
+//	for (int i = 0; i < 3; i++)
+//		averagePixel[i] = std::round(sigmaPixel[i] / sigmaWeight);
+//
+//	return averagePixel;
+//}
