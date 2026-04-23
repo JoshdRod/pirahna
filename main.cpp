@@ -126,7 +126,7 @@ Vec3b generateWeightedAverage(map<string, Vec3b> pixelMap, map<string, float> we
 	// Return avg : sigma pixel / sigma weight
 	Vec3b averagePixel;
 	for (int i = 0; i < 3; i++)
-		averagePixel[i] = sigmaPixel[i] / sigmaWeight;
+		averagePixel[i] = std::round(sigmaPixel[i] / sigmaWeight);
 
 	return averagePixel;
 }
