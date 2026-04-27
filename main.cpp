@@ -97,6 +97,24 @@ map<string, Vec3b> generateSurroundingPixelMap(Mat frame, Point centrePixel)
 // INPUTS: frame of upscaled image, map<string, Vec3b> of surrounding pixels,Point where centre pixel lies on original image, int scale factor
 void generateBottomRightPixels(Mat upscaledFrame, map<string, Vec3b> surroundingPixelMap, Point originalCentrePoint, int scaleFactor) // TODO: Switch to centrePoint on UPSCALED image
 {
+	// Calculate position old pixel will be on new image
+	map<string, int> pixelPositionMap;
+	for (auto pixel : surroundingPixelMap)
+	{
+		// Calculate pixel's position relative to centre pixel on upscaled image
+		Point pixelRelativePosition = Point(0,0);
+		if (pixel.first.contains("top"))
+			pixelRelativePosition.y = scaleFactor;
+		else if (pixel.first.contains("bottom"))
+			pixelRelativePosition.y = -scaleFactor;
+
+		if (pixel.first.contains("right"))
+			pixelRelativePosition.x = scaleFactor;
+		else if (pixel.first.contains("left"))
+			pixelRelativePosition.x = -scaleFactor;
+		pixelPositionMap.insert(pixel.first, pixelRelativePosition);
+	}
+
 	// Calculate position of where generated pixel will go
 	for (int i = 0; i < scaleFactor; i++)
 	{
@@ -105,24 +123,8 @@ void generateBottomRightPixels(Mat upscaledFrame, map<string, Vec3b> surrounding
 			// Skip 0,0 (that's the centre pixel!)
 			if (i == 0 && j == 0)
 				continue;
-			// Calculate position old pixel will be on new image
-			map<string, int> pixelPositionMap;
-			for (auto pixel : surroundingPixelMap)
-			{
-				// Calculate pixel's position relative to centre pixel on upscaled image
-				Point pixelRelativePosition = Point(0,0);
-				if (pixel.first.contains("top"))
-					pixelRelativePosition.y = scaleFactor;
-				else if (pixel.first.contains("bottom"))
-					pixelRelativePosition.y = -scaleFactor;
-
-				if (pixel.first.contains("right"))
-					pixelRelativePosition.x = scaleFactor;
-				else if (pixel.first.contains("left"))
-					pixelRelativePosition.x = -scaleFactor;
-				pixelPositionMap.insert(pixel.first, pixelRelativePosition);
-			}
 			// Calculate distance between (pythag)
+
 			// Do Ae^k(dist) here = weight
 			// (Figure out A and k via ML later)
 }
