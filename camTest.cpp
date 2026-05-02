@@ -7,12 +7,7 @@ using namespace cv;
 int main()
 {
     Mat frame;
-    VideoCapture cap;
-
-    int deviceID = 2; // Select the ID of the USB camera we want - 0 = default
-    int apiID = CAP_V4L2; // ??
-
-    cap.open(deviceID, apiID); // Opens selected cam using selected API
+    VideoCapture cap(0); // Opens default camera
 
     // Error if fail to open cam
     if (!cap.isOpened()) {
